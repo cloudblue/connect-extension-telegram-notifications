@@ -1,0 +1,125 @@
+# Welcome to Connect Extension project Telegram notify
+
+## Next steps
+
+You may open your favorite IDE and start working with your project, please note that this project runs using docker.
+You may modify at any time the credentials used to authenticate to connect modifying the file *telegram_notify/.telegram_notify_dev.env*.
+
+
+In order to start your extension as a standalone docker container you can access the project folder and run:
+
+```sh
+$ docker compose up telegram_notify_dev
+```
+
+> please note that in this way you will run the docker container and if you do changes on the code you will need to stop it and start it again.
+
+If you would like to develop and test at the same time, we recommend you run your project using the command:
+
+```sh
+$ docker compose up telegram_notify_bash
+```
+
+Once you get the interactive shell, you can run your extension using the command `cextrun`, stopping the process (using ctrl+c) and start it back will reload the changes.
+
+Additionally, a basic boilerplate for writing unit tests has been created, you can run the tests using:
+
+```sh
+$ docker compose up telegram_notify_test
+```
+
+
+## Environment variables
+
+You may declare environment variables used by the extension in the `events.py` like in the following example:
+
+```python
+
+@variables([
+    {
+        'name': 'VAR_NAME_1',
+        'initial_value': 'VAR_VALUE_1',
+        'secure': False,
+    },
+    {
+        'name': 'VAR_NAME_N',
+        'initial_value': 'VAR_VALUE_N',
+        'secure': True,
+    },
+])
+class MyAwesomeProjectExtension(Extension):
+	pass
+```
+
+
+* *Secure variables*:
+You can add secure variables just by setting the attribute `secure` to **true**. These sorts of variables are secret, then the value is stored encrypted and never displayed.
+* *Standard variables*:
+They are standard ones, not storing sensible data.
+
+
+## Event handlers
+
+Event handlers are methods of the extension class decorated with the `event`
+decorator with the following signature:
+
+```python
+@event(
+    'usage_file_request_processing',
+    statuses=[
+        'draft', 'uploading', 'uploaded',
+        'invalid', 'processing', 'processed',
+        'ready', 'rejected', 'pending',
+        'accepted', 'closed', 'deleted',
+    ],
+)
+def handle_usage_event(self, request):
+	pass
+
+```
+
+The first parameter of the `event` decorator is the unique event identifier (sometimes referred to as event type).
+
+The statuses keyword argument accepts a list of statuses of the object that generates the event in which the extension is interested.
+
+The argument of the handler method will receive the object that triggered the event.
+
+You can get a list of all available events through the [CloudBlue Connect public API](https://connect.cloudblue.com/community/developers/api/openapi/#operations-tag-DevOps). 
+
+Events are grouped into two categories: *background* and *interactive*.
+
+Interactive events are those events that are triggered by an HTTP call for example the Draft Purchase Request validation.
+
+Background events are triggered when a domain object is modified.
+
+Interactive event handlers must return an `InteractiveResponse` object while
+background event handlers must return a `BackgroundResponse`.
+
+
+## Schedulables
+
+Schedulables are methods of the extension class whose invocation can be scheduled. 
+
+A schedulable method will have the following signature:
+
+```python
+
+@schedulable('Schedulable method', 'It can be used to test DevOps scheduler.')
+def execute_scheduled_processing(self, schedule):
+	pass
+```
+
+The first parameter of the `schedulable` decorator is the descriptive name of such method, the second is a detailed description.
+
+The argument of the schedulable method will receive the schedule object that triggered its execution. 
+
+
+
+## Community Resources
+
+Please take note of these links in order to get additional information:
+
+* https://connect.cloudblue.com/
+* https://connect.cloudblue.com/community/modules/devops/
+* https://connect.cloudblue.com/community/sdk/python-openapi-client/
+* https://connect-openapi-client.readthedocs.io/en/latest/

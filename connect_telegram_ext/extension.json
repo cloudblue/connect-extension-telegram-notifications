@@ -1,0 +1,28 @@
+{
+  "name": "Telegram notify",
+  "description": "A very simple Telegram notificator",
+  "version": "0.1.0",
+  "readme_url": "https://example.com/README.md",
+  "changelog_url": "https://example.com/CHANGELOG.md",
+  "icon": "googleExtensionBaseline",
+  "ui": {
+    "settings": {
+      "label": "Settings",
+      "url": "/static/settings.html"
+    },
+    "customer": {
+      "label": "Customer Portal UI",
+      "url": "/static/customer.html"
+    },
+    "modules": {
+      "label": "Main Page",
+      "url": "/static/index.html",
+      "children": [
+        {
+          "label": "Page 1",
+          "url": "/static/page1.html"
+        }
+      ]
+    }
+  }
+}

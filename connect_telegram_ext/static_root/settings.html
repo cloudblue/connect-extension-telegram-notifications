@@ -1,0 +1,17 @@
+<html lang="en">
+<head>
+    <title>Telegram extension settings page</title>
+    <link href="/static/css/stylesheet.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Mono:400,500|Material+Icons"
+          rel="stylesheet">
+    <script type="module">
+        import {createApp} from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+        import telegramSettings from '/static/js/telegram-settings.js'
+
+        createApp(telegramSettings).mount('#app')
+    </script>
+</head>
+<body style="height:600px;">
+<div id="app"></div>
+</body>
+</html>

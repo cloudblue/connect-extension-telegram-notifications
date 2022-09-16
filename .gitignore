@@ -1,0 +1,8 @@
+*.pyc
+htmlcov
+.coverage
+coverage.xml
+.telegram_notify_dev.env
+.pytest_cache
+dist
+.idea

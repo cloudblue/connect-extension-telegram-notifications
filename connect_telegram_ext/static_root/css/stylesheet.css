@@ -1,0 +1,27 @@
+.card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 18px 24px 24px 24px;
+    display: block;
+    text-decoration: inherit;
+    color: inherit;
+    font-family: "Roboto";
+}
+
+.card .header {
+    margin-bottom: 26px;
+}
+
+.card .title {
+    line-height: 25px;
+    font-size: 20px;
+    margin: 0;
+}
+
+.card .subtitle {
+    font-size: 14px;
+    line-height: 20px;
+    color: #707070;
+    margin: 0;
+}

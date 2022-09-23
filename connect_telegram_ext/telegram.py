@@ -12,4 +12,4 @@ class TelegramClient:
 
     def send_message(self, message):
         bot = telegram.Bot(self.token)
-        bot.send_message(self.chat_id, message)
+        return bot.send_message(self.chat_id, message)

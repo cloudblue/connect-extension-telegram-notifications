@@ -12,4 +12,8 @@ class TelegramClient:
 
     def send_message(self, message):
         bot = telegram.Bot(self.token)
-        return bot.send_message(self.chat_id, message)
+        return bot.send_message(
+            self.chat_id,
+            message,
+            parse_mode=telegram.constants.PARSEMODE_MARKDOWN_V2,
+        )

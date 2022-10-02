@@ -14,6 +14,7 @@ from connect.eaas.core.responses import (
 
 from connect_telegram_ext.constants import Errors, Event, Events
 from connect_telegram_ext.telegram import TelegramClient
+import connect_telegram_ext.messages as event_messages
 
 
 @variables([{
@@ -21,6 +22,34 @@ from connect_telegram_ext.telegram import TelegramClient
     "initial_value": "https://change.me/",
 }])
 class TelegramNotifyExtension(BaseExtension):
+    def _get_object_link(self, request, event_type):
+        domain = self.installation_client.branding.action('portal').get()['domain']
+        return f"https://{domain}/{event_type.path}/{request['id']}"
+
+    def _get_message(self, request, event_type: Event):
+        message_template = None
+        try:
+            message_template = vars(event_messages)[
+                f"{event_type.name.upper()}_{request[event_type.status_filed]}"
+            ]
+        except KeyError:
+            pass
+
+        if not message_template:
+            try:
+                message_template = vars(event_messages)[f"{event_type.name.upper()}"]
+            except KeyError:
+                pass
+
+        if not message_template:
+            message_template = event_messages.DEFAULT_MESSAGE
+
+        return message_template.format(
+            object_link=self._get_object_link(request, event_type),
+            object_status=request[event_type.status_filed],
+            **request,
+        ).replace('-', '\-').replace('.', '\.').replace('!', '\!')  # noqa: W605
+
     def _handle_event(self, request, event_type: Event):
         self.logger.info(f"Obtained {event_type.title} request with id {request['id']}")
         if 'token' not in self.installation['settings']:
@@ -29,22 +58,20 @@ class TelegramNotifyExtension(BaseExtension):
         try:
             if self.installation['settings'][
                 'notifications'
-            ][event_type.name]['statuses'][request['status']]:
+            ][event_type.name]['statuses'][request[event_type.status_filed]]:
                 TelegramClient(
                     self.installation['settings']['token'],
                     self.installation['settings']['chatId'],
                 ).send_message(
-                    event_type.message_template.format(
-                        portal_url=self.config['PORTAL_URL'],
-                        **request,
-                    ),
+                    self._get_message(request, event_type),
                 )
             else:
                 self.logger.info(f"request with id {request['id']} skipped because of settings")
         except telegram.error.TelegramError as err:
             self.logger.error(str(err))
             return BackgroundResponse.fail(str(err))
-        except KeyError:
+        except KeyError as err:
+            self.logger.error(str(err))
             self.logger.error('Event was skipped due to user settings')
             return BackgroundResponse.done()
 

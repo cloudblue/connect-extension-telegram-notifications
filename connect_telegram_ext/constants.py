@@ -1,87 +1,103 @@
 from dataclasses import dataclass
 
+import connect_telegram_ext.titles as event_titles
+
 
 @dataclass
 class Event:
     name: str
     statuses: list
     title: str
-    message_template: str = 'Obtained request with id {id}'
+    path: str
     enabled: bool = False
+    status_filed: str = 'status'
 
 
 class Events:
     INSTALLATION_STATUS_CHANGE = Event(
         'installation_status_change',
         ['installed', 'uninstalled'],
-        'Installation status change',
+        event_titles.INSTALLATION_STATUS_CHANGE_PROCESSING,
+        'devops/installations',
     )
     TIER_CONFIG_ADJUSTMENT_REQUEST_PROCESSING = Event(
         'tier_config_adjustment_request_processing',
         ['pending', 'approved', 'failed', 'inquiring'],
-        'Tier config adjustment request processing',
+        event_titles.TIER_CONFIG_ADJUSTMENT_REQUEST_PROCESSING,
+        'tier/config-requests',
     )
     TIER_CONFIG_CHANGE_REQUEST_PROCESSING = Event(
         'tier_config_change_request_processing',
         ['pending', 'approved', 'failed', 'inquiring'],
-        'Tier config change request processing',
+        event_titles.TIER_CONFIG_CHANGE_REQUEST_PROCESSING,
+        'tier/config-requests',
     )
     ASSET_CANCEL_REQUEST_PROCESSING = Event(
         'asset_cancel_request_processing',
         ['pending', 'approved', 'failed', 'inquiring', 'scheduled', 'revoking', 'revoked'],
-        'Asset cancel request processing',
+        event_titles.ASSET_CANCEL_REQUEST_PROCESSING,
+        'requests',
     )
     TIER_CONFIG_SETUP_REQUEST_PROCESSING = Event(
         'tier_config_setup_request_processing',
         ['pending', 'approved', 'failed', 'inquiring'],
-        'Tier config setup request processing',
+        event_titles.TIER_CONFIG_SETUP_REQUEST_PROCESSING,
+        'tier/config-requests',
     )
     ASSET_RESUME_REQUEST_PROCESSING = Event(
         'asset_resume_request_processing',
         ['pending', 'approved', 'failed', 'inquiring', 'scheduled', 'revoking', 'revoked'],
-        'Asset resume request processing',
+        event_titles.ASSET_RESUME_REQUEST_PROCESSING,
+        'requests',
     )
     ASSET_ADJUSTMENT_REQUEST_PROCESSING = Event(
         'asset_adjustment_request_processing',
         ['pending', 'approved', 'failed', 'inquiring', 'scheduled', 'revoking', 'revoked'],
-        'Asset adjustment request processing',
+        event_titles.ASSET_ADJUSTMENT_REQUEST_PROCESSING,
+        'requests',
     )
     ASSET_SUSPEND_REQUEST_PROCESSING = Event(
         'asset_suspend_request_processing',
         ['pending', 'approved', 'failed', 'inquiring', 'scheduled', 'revoking', 'revoked'],
-        'Asset suspend request processing',
+        event_titles.ASSET_SUSPEND_REQUEST_PROCESSING,
+        'requests',
     )
     TIER_ACCOUNT_UPDATE_REQUEST_PROCESSING = Event(
         'tier_account_update_request_processing',
         ['pending', 'accepted', 'ignored'],
-        'Tier account update request processing',
+        event_titles.TIER_ACCOUNT_UPDATE_REQUEST_PROCESSING,
+        'tier/account-requests',
     )
     ASSET_CHANGE_REQUEST_PROCESSING = Event(
         'asset_change_request_processing',
         ['pending', 'approved', 'failed', 'inquiring', 'scheduled', 'revoking', 'revoked'],
-        'Asset change request processing',
+        event_titles.ASSET_CHANGE_REQUEST_PROCESSING,
+        'requests',
     )
     ASSET_PURCHASE_REQUEST_PROCESSING = Event(
         'asset_purchase_request_processing',
         ['pending', 'approved', 'failed', 'inquiring', 'scheduled', 'revoking', 'revoked'],
-        'Asset purchase request processing',
-        'Purchase request {id} got update. The current status is {status}. '
-        '{portal_url}/subscriptions/fulfillment/{id}',
+        event_titles.ASSET_PURCHASE_REQUEST_PROCESSING,
+        'requests/',
     )
     PART_USAGE_FILE_REQUEST_PROCESSING = Event(
         'part_usage_file_request_processing',
         ['draft', 'ready', 'closed', 'failed'],
-        'Part usage file request processing',
+        event_titles.PART_USAGE_FILE_REQUEST_PROCESSING,
+        'usage/chunks',
     )
     USAGE_FILE_REQUEST_PROCESSING = Event(
         'usage_file_request_processing',
         ['pending', 'accepted', 'ignored'],
-        'Usage file request processing',
+        event_titles.USAGE_FILE_REQUEST_PROCESSING,
+        'usage/files',
     )
     HELPDESK_CASE_PROCESSING = Event(
         'helpdesk_case_processing',
         ["pending", "inquiring", "resolved", "closed"],
-        'Helpdesk case processing',
+        event_titles.HELPDESK_CASE_PROCESSING,
+        'helpdesk/cases',
+        status_filed='state',
     )
 
 

@@ -98,10 +98,7 @@ export default {
     },
   },
   async created() {
-    const requestOptions = {
-      headers: {"Authorization": "ApiKey SU-064-200-000:8d19ea069402743aef699bbf35da1d1447064000"}
-    };
-    await fetch('/api/settings', requestOptions).then(installation => {
+    await fetch('/api/settings').then(installation => {
     this.token = installation['token']
     this.chatId = installation['chatId']
     this.notifications = installation['notifications']

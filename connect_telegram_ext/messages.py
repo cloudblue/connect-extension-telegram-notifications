@@ -45,7 +45,7 @@ USAGE_FILE_UPLOAD_PROCESSING = None
 
 HELPDESK_CASE_PROCESSING = (
     '*WARNING!* \nHelpdesk case №[{id}]({object_link}) '
-    'changed status to {object_status}.'
+    'changed status to {object_status}. {object_link}'
 )
 HELPDESK_CASE_PROCESSING_resolved = (
     '*Congratulations!* \nHelpdesk case '

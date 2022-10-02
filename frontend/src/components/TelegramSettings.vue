@@ -87,18 +87,20 @@ export default {
     }
   },
   async created() {
-    await fetch('/api/settings').then(installation => {
-    this.token = installation['token']
-    this.chatId = installation['chatId']
-    this.notifications = installation['notifications']
+    await fetch('/api/settings')
+        .then(installation => installation.json())
+        .then(installation => {
+          this.token = installation['token']
+          this.chatId = installation['chatId']
+          this.notifications = installation['notifications']
 
-    for (let eventKey in this.notifications) {
-      this.spinners[eventKey] = {}
-      for (let statusKey in this.notifications[eventKey]['statuses']) {
-        this.spinners[eventKey][statusKey] = false
-      }
-    }
-    })
+          for (let eventKey in this.notifications) {
+            this.spinners[eventKey] = {}
+            for (let statusKey in this.notifications[eventKey]['statuses']) {
+              this.spinners[eventKey][statusKey] = false
+            }
+          }
+        })
 
   },
   methods: {
@@ -161,7 +163,7 @@ export default {
           countStatusesEnabled++
         }
       }
-      return event.title + ' ('+countStatusesEnabled+' of '+Object.keys(event.statuses).length+' enabled)'
+      return event.title + ' (' + countStatusesEnabled + ' of ' + Object.keys(event.statuses).length + ' enabled)'
     }
   }
 };

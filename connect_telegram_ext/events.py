@@ -27,11 +27,12 @@ class TelegramNotifyExtension(BaseExtension):
     def _get_object_link(self, request, event_type):
         try:
             domain = self.installation_client.branding.action('portal').get()['domain']
+            domain = f"https://{domain}/"
         except HTTPError:
             domain = self.config['PORTAL_URL']
         except ClientError:
             domain = self.config['PORTAL_URL']
-        return f"https://{domain}/{event_type.path}/{request['id']}"
+        return f"{domain}{event_type.path}/{request['id']}"
 
     def _get_message(self, request, event_type: Event):
         message_template = None

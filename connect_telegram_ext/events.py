@@ -5,6 +5,7 @@
 #
 import telegram.error
 from requests.exceptions import HTTPError
+from connect.client.exceptions import ClientError
 from connect.eaas.core.decorators import (
     event, variables,
 )
@@ -27,6 +28,8 @@ class TelegramNotifyExtension(BaseExtension):
         try:
             domain = self.installation_client.branding.action('portal').get()['domain']
         except HTTPError:
+            domain = self.config['PORTAL_URL']
+        except ClientError:
             domain = self.config['PORTAL_URL']
         return f"https://{domain}/{event_type.path}/{request['id']}"
 

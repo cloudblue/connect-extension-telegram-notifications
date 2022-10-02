@@ -21,7 +21,7 @@
         <MDBCardTitle>Notification settings</MDBCardTitle>
         <MDBCardText>
           <MDBAccordion v-model="activeItem">
-            <MDBAccordionItem v-for="(event, eventName) in sortedNotifications" :key="eventName"
+            <MDBAccordionItem v-for="(event, eventName) in notifications" :key="eventName"
                               :collapseId="eventName"
                               :headerTitle="getTitle(event)">
               <ul>
@@ -85,17 +85,6 @@ export default {
     return {
       activeItem
     }
-  },
-  computed: {
-    sortedNotifications: function () {
-      return Object.keys(this.notifications).sort().reduce(
-          (obj, key) => {
-            obj[key] = this.notifications[key];
-            return obj;
-          },
-          {}
-      );
-    },
   },
   async created() {
     await fetch('/api/settings').then(installation => {

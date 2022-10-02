@@ -5,7 +5,7 @@
 #
 import telegram.error
 from connect.eaas.core.decorators import (
-    event, variables,
+    event,
 )
 from connect.eaas.core.extension import EventsExtension as BaseExtension
 from connect.eaas.core.responses import (
@@ -17,10 +17,6 @@ from connect_telegram_ext.telegram import TelegramClient
 import connect_telegram_ext.messages as event_messages
 
 
-@variables([{
-    "name": "PORTAL_URL",
-    "initial_value": "https://change.me/",
-}])
 class TelegramNotifyExtension(BaseExtension):
     def _get_object_link(self, request, event_type):
         domain = self.installation_client.branding.action('portal').get()['domain']

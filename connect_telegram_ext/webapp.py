@@ -5,6 +5,7 @@
 #
 
 import telegram.error
+import collections
 from connect.client import ConnectClient
 from connect.eaas.core.decorators import (
     account_settings_page,
@@ -45,7 +46,7 @@ def _format_notification_settings(settings_dict):
                 ][event.name]['statuses'][status]
             else:
                 return_array[event.name]['statuses'][status] = False
-    return return_array
+    return collections.OrderedDict(sorted(return_array.items()))
 
 
 @web_app(router)

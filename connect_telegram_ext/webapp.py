@@ -4,8 +4,9 @@
 # All rights reserved.
 #
 
-import telegram.error
 import collections
+
+import telegram.error
 from connect.client import ConnectClient
 from connect.eaas.core.decorators import (
     account_settings_page,

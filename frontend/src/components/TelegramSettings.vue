@@ -39,6 +39,21 @@
         </MDBCardText>
       </MDBCardBody>
     </MDBCard>
+
+    <MDBModal
+        id="exampleModal"
+        v-model="exampleModal"
+        labelledby="exampleModalLabel"
+        tabindex="-1"
+    >
+      <MDBModalHeader>
+        <MDBModalTitle id="exampleModalLabel"> {{ modalTitle }}</MDBModalTitle>
+      </MDBModalHeader>
+      <MDBModalBody>{{ modalBody }}</MDBModalBody>
+      <MDBModalFooter>
+        <MDBBtn color="secondary" @click="exampleModal = false">Ok</MDBBtn>
+      </MDBModalFooter>
+    </MDBModal>
   </MDBContainer>
 </template>
 
@@ -53,6 +68,11 @@ import {
   MDBCardTitle,
   MDBContainer,
   MDBInput,
+  MDBModal,
+  MDBModalBody,
+  MDBModalFooter,
+  MDBModalHeader,
+  MDBModalTitle,
   MDBSwitch,
 } from "mdb-vue-ui-kit";
 import {ref} from "vue";
@@ -70,6 +90,11 @@ export default {
     MDBAccordion,
     MDBAccordionItem,
     MDBSwitch,
+    MDBModal,
+    MDBModalHeader,
+    MDBModalTitle,
+    MDBModalBody,
+    MDBModalFooter,
   },
   data() {
     return {
@@ -77,31 +102,34 @@ export default {
       chatId: '',
       notifications: {},
       saved: true,
-      spinners: []
+      spinners: [],
+      modalTitle: "Alert",
+      modalBody: ""
     }
   },
   setup() {
     const activeItem = ref('collapseOne');
+    const exampleModal = ref(false);
     return {
-      activeItem
+      activeItem,
+      exampleModal
     }
   },
   async created() {
     await fetch('/api/settings')
-        .then(installation => installation.json())
-        .then(installation => {
-          this.token = installation['token']
-          this.chatId = installation['chatId']
-          this.notifications = installation['notifications']
+      .then(installation => installation.json())
+      .then(installation => {
+        this.token = installation['token']
+        this.chatId = installation['chatId']
+        this.notifications = installation['notifications']
 
-          for (let eventKey in this.notifications) {
-            this.spinners[eventKey] = {}
-            for (let statusKey in this.notifications[eventKey]['statuses']) {
-              this.spinners[eventKey][statusKey] = false
-            }
+        for (let eventKey in this.notifications) {
+          this.spinners[eventKey] = {}
+          for (let statusKey in this.notifications[eventKey]['statuses']) {
+            this.spinners[eventKey][statusKey] = false
           }
-        })
-
+        }
+      })
   },
   methods: {
     setUnsaved() {
@@ -109,16 +137,16 @@ export default {
     },
     saveNotifications(eventName, statusName) {
       setTimeout(() => {
-        this.makeRequest()
+        this.makeRequest(true)
         this.spinners[eventName][statusName] = true
         setTimeout(() => {
           this.spinners[eventName][statusName] = false
         }, 2000)
-      }, 3000)
+      }, 300)
     },
     saveSettings(e) {
       e.preventDefault()
-      this.makeRequest()
+      this.makeRequest(false)
     },
     testSettings(e) {
       e.preventDefault()
@@ -130,16 +158,24 @@ export default {
         })
       };
       fetch('/api/test-message', requestOptions)
-          .then(response => response.json())
-          .then(data => {
-            if (data.status === "FAIL") {
-              alert('request failed: ' + data.error)
-            } else {
-              alert('request successfully sent!')
-            }
-          });
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === "FAIL") {
+            this.modalTitle = 'Error!'
+            this.modalBody = 'request failed: ' + data.error
+            this.exampleModal = true
+          } else {
+            this.modalTitle = 'OK!'
+            this.modalBody = 'request successfully sent!'
+            this.exampleModal = true
+          }
+        }).catch((error) => {
+          this.modalTitle = 'Error!'
+          this.modalBody = 'Request failed: ' + error
+          this.exampleModal = true
+      })
     },
-    makeRequest() {
+    makeRequest(silent) {
       let requestOptions = {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -150,11 +186,19 @@ export default {
         })
       };
       fetch('/api/settings', requestOptions)
-          .then(response => response.json())
-          .then(() => {
-            alert('saved')
-            this.saved = true
-          });
+        .then(response => response.json())
+        .then(() => {
+          if (!silent) {
+            this.modalTitle = 'OK!'
+            this.modalBody = 'Settings saved!'
+            this.exampleModal = true
+          }
+          this.saved = true
+        }).catch((error) => {
+          this.modalTitle = 'Error!'
+          this.modalBody = 'Request failed: ' + error
+          this.exampleModal = true
+      });
     },
     getTitle(event) {
       let countStatusesEnabled = 0

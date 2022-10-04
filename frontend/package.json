@@ -5,9 +5,10 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "start": "vue-cli-service serve --open",
-    "build:dev": "NODE_ENV=dev npm run build --dev --configuration=dev && react-scripts build"
+    "build:dev": "NODE_ENV=dev npm run build --dev --configuration=dev && react-scripts build",
+    "start": "vue-cli-service serve --open"
   },
   "dependencies": {
     "core-js": "^3.8.3",
@@ -15,15 +16,21 @@
     "vue": "^3.2.13"
   },
   "devDependencies": {
+    "connect-ui-toolkit": "github:cloudblue/connect-ui-toolkit",
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-unit-jest": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "@vue/test-utils": "^2.1.0",
+    "@vue/vue3-jest": "^27.0.0-alpha.1",
     "axios": "^0.18.1",
+    "babel-jest": "^27.0.6",
     "build-dev": "^0.3.3",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
+    "jest": "^27.0.5",
     "vue-cli-plugin-axios": "~0.0.4",
     "vue-cli-plugin-mdb5": "~1.2.0"
   },
@@ -39,7 +46,18 @@
     "parserOptions": {
       "parser": "@babel/eslint-parser"
     },
-    "rules": {}
+    "rules": {},
+    "overrides": [
+      {
+        "files": [
+          "**/__tests__/*.{j,t}s?(x)",
+          "**/tests/unit/**/*.spec.{j,t}s?(x)"
+        ],
+        "env": {
+          "jest": true
+        }
+      }
+    ]
   },
   "browserslist": [
     "> 1%",

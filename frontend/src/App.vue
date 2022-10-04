@@ -3,12 +3,16 @@
 </template>
 
 <script>
+import createApp from 'connect-ui-toolkit'
 import TelegramSettings from './components/TelegramSettings.vue'
 
 export default {
   name: 'App',
   components: {
     TelegramSettings
+  },
+  created(){
+    createApp({});
   }
 }
 </script>

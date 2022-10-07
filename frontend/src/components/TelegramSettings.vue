@@ -1,6 +1,4 @@
 <template>
-  <br/>
-  <br/>
   <MDBContainer>
     <MDBCard>
       <MDBCardBody>
@@ -10,8 +8,8 @@
           <br/>
           <MDBInput v-model="chatId" label="Chat ID" @change="setUnsaved()"/>
         </MDBCardText>
-        <MDBBtn color="primary" @click="saveSettings">Save</MDBBtn>
-        <MDBBtn :disabled="saved === false" color="primary" @click="testSettings">Test</MDBBtn>
+        <MDBBtn color="primary" :disabled="saving" @click.prevent="saveSettings">Save</MDBBtn>
+        <MDBBtn :disabled="saved === false && saving === false" color="primary" @click.prevent="testSettings">Test</MDBBtn>
       </MDBCardBody>
     </MDBCard>
     <br/>
@@ -24,14 +22,14 @@
             <MDBAccordionItem v-for="(event, eventName) in notifications" :key="eventName"
                               :collapseId="eventName"
                               :headerTitle="getTitle(event)">
-              <ul>
-                <li v-for="(statusValue, statusName) in event.statuses" :key="statusName">
-                  <MDBSwitch
-                      v-model="notifications[eventName].statuses[statusName]"
-                      :label="statusName"
-                      @click="saveNotifications(eventName, statusName)"
+              <ul class="switch-group">
+                <li class="switch-group-item" v-for="(statusValue, statusName) in event.statuses" :key="statusName">
+                  <SettingsItem
+                    :value="statusValue"
+                    :name="statusName"
+                    :loading="getSpinner(eventName, statusName)"
+                    @change="(value) => this.handleChange(eventName, statusName, value)"
                   />
-                  <span v-if="spinners[eventName][statusName]" class="requestSaved">Saved!</span>
                 </li>
               </ul>
             </MDBAccordionItem>
@@ -39,19 +37,18 @@
         </MDBCardText>
       </MDBCardBody>
     </MDBCard>
-
     <MDBModal
-        id="exampleModal"
-        v-model="exampleModal"
-        labelledby="exampleModalLabel"
+        id="modal"
+        v-model="modal"
+        labelledby="modalLabel"
         tabindex="-1"
     >
       <MDBModalHeader>
-        <MDBModalTitle id="exampleModalLabel"> {{ modalTitle }}</MDBModalTitle>
+        <MDBModalTitle id="modalLabel"> {{ modalTitle }}</MDBModalTitle>
       </MDBModalHeader>
       <MDBModalBody>{{ modalBody }}</MDBModalBody>
       <MDBModalFooter>
-        <MDBBtn color="secondary" @click="exampleModal = false">Ok</MDBBtn>
+        <MDBBtn color="secondary" @click="modal = false">Ok</MDBBtn>
       </MDBModalFooter>
     </MDBModal>
   </MDBContainer>
@@ -73,9 +70,9 @@ import {
   MDBModalFooter,
   MDBModalHeader,
   MDBModalTitle,
-  MDBSwitch,
 } from "mdb-vue-ui-kit";
 import {ref} from "vue";
+import SettingsItem from './SettingsItem.vue'
 
 export default {
   name: "TelegramSettings",
@@ -89,12 +86,12 @@ export default {
     MDBInput,
     MDBAccordion,
     MDBAccordionItem,
-    MDBSwitch,
     MDBModal,
     MDBModalHeader,
     MDBModalTitle,
     MDBModalBody,
     MDBModalFooter,
+    SettingsItem,
   },
   data() {
     return {
@@ -102,80 +99,86 @@ export default {
       chatId: '',
       notifications: {},
       saved: true,
-      spinners: [],
-      modalTitle: "Alert",
+      saving: false,
+      spinners: {},
+      modalTitle: "",
       modalBody: ""
     }
   },
   setup() {
     const activeItem = ref('collapseOne');
-    const exampleModal = ref(false);
+    const modal = ref(false);
     return {
       activeItem,
-      exampleModal
+      modal
     }
   },
   async created() {
-    await fetch('/api/settings')
-      .then(installation => installation.json())
-      .then(installation => {
-        this.token = installation['token']
-        this.chatId = installation['chatId']
-        this.notifications = installation['notifications']
-
-        for (let eventKey in this.notifications) {
-          this.spinners[eventKey] = {}
-          for (let statusKey in this.notifications[eventKey]['statuses']) {
-            this.spinners[eventKey][statusKey] = false
-          }
-        }
-      })
+    try {
+      const response =  await fetch('/api/settings');
+      const {token, chatId, notifications}  = await response.json();
+      this.token = token;
+      this.chatId = chatId;
+      this.notifications = notifications;
+    } catch(error) {
+        this.showError('Request failed: ' + error);
+    }
   },
   methods: {
+    showError(body='Some error'){
+      this.modalTitle = 'Error!';
+      this.modalBody = body;
+      this.modal = true;
+    },
+    showAlert(body=''){
+      this.modalTitle = 'OK!';
+      this.modalBody = body;
+      this.modal = true;
+    },
+    getSpinner(eventName, statusName){
+      return !!(this.spinners[eventName] && this.spinners[eventName][statusName]);
+    },
+    setSpinner(eventName, statusName, value) {
+      if (!this.spinners[eventName]) {
+        this.spinners[eventName] = {};
+      }
+      this.spinners[eventName][statusName] = value;
+    },
     setUnsaved() {
       this.saved = false
     },
-    saveNotifications(eventName, statusName) {
-      setTimeout(() => {
-        this.makeRequest(true)
-        this.spinners[eventName][statusName] = true
-        setTimeout(() => {
-          this.spinners[eventName][statusName] = false
-        }, 2000)
-      }, 300)
+    async saveSettings() {
+      this.saving = true;
+      await this.makeRequest(false);
+      this.saving = false;
     },
-    saveSettings(e) {
-      e.preventDefault()
-      this.makeRequest(false)
-    },
-    testSettings(e) {
-      e.preventDefault()
-      let requestOptions = {
+    async testSettings() {
+      const requestOptions = {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
           message: "This is a test message",
         })
       };
-      fetch('/api/test-message', requestOptions)
-        .then(response => response.json())
-        .then(data => {
-          if (data.status === "FAIL") {
-            this.modalTitle = 'Error!'
-            this.modalBody = 'request failed: ' + data.error
-            this.exampleModal = true
-          } else {
-            this.modalTitle = 'OK!'
-            this.modalBody = 'request successfully sent!'
-            this.exampleModal = true
-          }
-        }).catch((error) => {
-          this.modalTitle = 'Error!'
-          this.modalBody = 'Request failed: ' + error
-          this.exampleModal = true
-      })
+      try {
+        const response = await fetch('/api/test-message', requestOptions);
+        const data = await response.json();
+        if (data.status === "FAIL") {
+          throw new Error(data.error);
+        } else {
+          this.showAlert('request successfully sent!');
+        }
+      } catch(error)  {
+          this.showError('Request failed: ' + error);
+      }
     },
-    makeRequest(silent) {
+    async handleChange(eventName, statusName, value) {
+      this.notifications[eventName].statuses[statusName] = value;
+      this.setSpinner(eventName, statusName, true);
+      await this.makeRequest(true);
+      this.setSpinner(eventName, statusName, false);
+    },
+    async makeRequest(silent) {
       let requestOptions = {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -185,42 +188,28 @@ export default {
           notifications: this.notifications
         })
       };
-      fetch('/api/settings', requestOptions)
-        .then(response => response.json())
-        .then(() => {
-          if (!silent) {
-            this.modalTitle = 'OK!'
-            this.modalBody = 'Settings saved!'
-            this.exampleModal = true
-          }
-          this.saved = true
-        }).catch((error) => {
-          this.modalTitle = 'Error!'
-          this.modalBody = 'Request failed: ' + error
-          this.exampleModal = true
-      });
+      try {
+        await fetch('/api/settings', requestOptions);
+        if (!silent) {
+          this.showAlert('Settings saved!');
+        }
+        this.saved = true
+      }
+      catch(error){
+        this.showError('Request failed: ' + error);
+      }
     },
     getTitle(event) {
-      let countStatusesEnabled = 0
-      for (let eventStatus in event.statuses) {
-        if (event.statuses[eventStatus]) {
-          countStatusesEnabled++
-        }
-      }
-      return event.title + ' (' + countStatusesEnabled + ' of ' + Object.keys(event.statuses).length + ' enabled)'
+      const countStatusesEnabled = Object.keys(event.statuses).map(statusName => event.statuses[statusName]).filter(Boolean).length;
+      const countAllStatuses = Object.keys(event.statuses).length;
+      return `${event.title} (${countStatusesEnabled} of ${countAllStatuses} enabled)`
     }
   }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.form-switch {
-  display: inline-block;
-  margin-right: 10px;
-}
-
-.requestSaved {
-  color: #6A9955
+.switch-group .switch-group-item {
+  list-style-type: none;
 }
 </style>

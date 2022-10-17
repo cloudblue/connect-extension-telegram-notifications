@@ -10,15 +10,14 @@ packages = [
 readme = "./README.md"
 
 [tool.poetry.plugins."connect.eaas.ext"]
-"extension" = "connect_telegram_ext.events:TelegramNotifyExtension"
-"webapp" = "connect_telegram_ext.webapp:TelegramNotifyWebAppExtension"
+"extension" = "connect_telegram_ext.events:TelegramNotifyApplication"
+"webapp" = "connect_telegram_ext.webapp:TelegramNotifyWebApplication"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
 python-telegram-bot = "^13.14"
 responses = "^0.21.0"
-connect-openapi-client = "25.10"
-connect-eaas-core = "4.0.0"
+connect-eaas-core = "26.*"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.2"

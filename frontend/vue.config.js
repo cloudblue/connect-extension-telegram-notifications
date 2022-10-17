@@ -1,7 +1,7 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
-  outputDir: '../connect_telegram_ext/static_root',
+  outputDir: '../connect_telegram_ext/static',
   publicPath: '/static',
   pages: {
     setting: {

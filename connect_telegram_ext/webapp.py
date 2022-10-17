@@ -13,7 +13,7 @@ from connect.eaas.core.decorators import (
     router,
     web_app,
 )
-from connect.eaas.core.extension import WebAppExtension
+from connect.eaas.core.extension import WebApplicationBase
 from connect.eaas.core.inject.synchronous import get_installation, get_installation_client
 from fastapi import Depends
 from pydantic import BaseModel
@@ -52,7 +52,7 @@ def _format_notification_settings(settings_dict):
 
 @web_app(router)
 @account_settings_page('My Settings', '/static/settings.html')
-class TelegramNotifyWebAppExtension(WebAppExtension):
+class TelegramNotifyWebApplication(WebApplicationBase):
     @router.get('/settings')
     def retrieve_settings(
             self,

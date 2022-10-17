@@ -9,7 +9,7 @@ from connect.client.exceptions import ClientError
 from connect.eaas.core.decorators import (
     event, variables,
 )
-from connect.eaas.core.extension import EventsExtension as BaseExtension
+from connect.eaas.core.extension import EventsApplicationBase
 from connect.eaas.core.responses import (
     BackgroundResponse,
 )
@@ -23,7 +23,7 @@ import connect_telegram_ext.messages as event_messages
     "name": "PORTAL_URL",
     "initial_value": "https://change.me/",
 }])
-class TelegramNotifyExtension(BaseExtension):
+class TelegramNotifyApplication(EventsApplicationBase):
     def _get_object_link(self, request, event_type):
         try:
             domain = self.installation_client.branding.action('portal').get()['domain']
@@ -37,16 +37,17 @@ class TelegramNotifyExtension(BaseExtension):
     def _get_message(self, request, event_type: Event):
         message_template = None
         try:
-            message_template = vars(event_messages)[
-                f"{event_type.name.upper()}_{request[event_type.status_filed]}"
-            ]
-        except KeyError:
+            message_template = getattr(
+                event_messages,
+                f"{event_type.name.upper()}_{request[event_type.status_filed]}",
+            )
+        except AttributeError:
             pass
 
         if not message_template:
             try:
-                message_template = vars(event_messages)[f"{event_type.name.upper()}"]
-            except KeyError:
+                message_template = getattr(event_messages, f"{event_type.name.upper()}")
+            except AttributeError:
                 pass
 
         if not message_template:

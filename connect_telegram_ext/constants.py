@@ -88,7 +88,8 @@ class Events:
     )
     USAGE_FILE_REQUEST_PROCESSING = Event(
         'usage_file_request_processing',
-        ['pending', 'accepted', 'ignored'],
+        ["draft", "uploading", "uploaded", "invalid", "processing",
+         "processed", "ready", "rejected", "pending", "accepted", "closed"],
         event_titles.USAGE_FILE_REQUEST_PROCESSING,
         'usage/files',
     )

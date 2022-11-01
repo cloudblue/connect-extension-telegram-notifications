@@ -10,7 +10,7 @@ packages = [
 readme = "./README.md"
 
 [tool.poetry.plugins."connect.eaas.ext"]
-"extension" = "connect_telegram_ext.events:TelegramNotifyApplication"
+"eventsapp" = "connect_telegram_ext.events:TelegramNotifyApplication"
 "webapp" = "connect_telegram_ext.webapp:TelegramNotifyWebApplication"
 
 [tool.poetry.dependencies]
@@ -53,4 +53,12 @@ branch = true
 
 [tool.coverage.report]
 omit = [
+]
+
+exclude_lines = [
+    "pragma: no cover",
+    "def __str__",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
 ]

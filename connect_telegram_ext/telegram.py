@@ -15,5 +15,5 @@ class TelegramClient:
         return bot.send_message(
             self.chat_id,
             message,
-            parse_mode=telegram.constants.PARSEMODE_MARKDOWN_V2,
+            parse_mode=telegram.constants.PARSEMODE_HTML,
         )

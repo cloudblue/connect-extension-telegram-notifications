@@ -1,8 +1,9 @@
 {
   "name": "Telegram notify",
   "description": "A very simple Telegram notificator",
-  "version": "0.5.3",
+  "version": "0.7.2",
   "readme_url": "https://example.com/README.md",
   "changelog_url": "https://example.com/CHANGELOG.md",
-  "icon": "googleExtensionBaseline"
+  "icon": "googleExtensionBaseline",
+  "audience": ["vendor", "distributor", "reseller"]
 }

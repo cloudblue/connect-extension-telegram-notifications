@@ -19,8 +19,10 @@ from fastapi import Depends
 from fastapi import HTTPException
 from starlette.status import HTTP_204_NO_CONTENT
 
-from connect_telegram_ext.constants import EVENT_LIST, Errors
-from connect_telegram_ext.models import SettingsPayload, TestMessagePayload, ErrorResponse
+from connect_telegram_ext.constants import Errors, EVENT_LIST
+from connect_telegram_ext.models import (
+    ErrorResponse, SettingsPayload, TestMessagePayload,
+)
 from connect_telegram_ext.telegram import TelegramClient
 
 
@@ -52,11 +54,11 @@ class TelegramNotifyWebApplication(WebApplicationBase):
         responses={
             500: {
                 "model": ErrorResponse,
-                "description": "Something wrong happened on our side. There are some hints in the response but "
-                               "usually they shouldn't help much "
-            }
+                "description": "Something wrong happened on our side. There are some "
+                               "hints in the response but usually they shouldn't help much",
+            },
         },
-        description="This function returns connectivity and notification settings"
+        description="This function returns connectivity and notification settings",
     )
     def retrieve_settings(
             self,
@@ -69,7 +71,10 @@ class TelegramNotifyWebApplication(WebApplicationBase):
                 notifications=_format_notification_settings(installation['settings']),
             )
         except Exception as err:
-            raise HTTPException(status_code=500, detail="Something went wrong on our side: " + str(err))
+            raise HTTPException(
+                status_code=500,
+                detail="Something went wrong on our side: " + str(err),
+            )
         return settings
 
     @router.post(
@@ -79,11 +84,11 @@ class TelegramNotifyWebApplication(WebApplicationBase):
         responses={
             500: {
                 "model": ErrorResponse,
-                "description": "Something wrong happened on our side. There are some hints in the response but "
-                               "usually they shouldn't help much "
-            }
+                "description": "Something wrong happened on our side. There are some hints "
+                               "in the response but usually they shouldn't help much ",
+            },
         },
-        description="This method saves given settings."
+        description="This method saves given settings.",
     )
     async def update_settings(
             self,
@@ -101,7 +106,10 @@ class TelegramNotifyWebApplication(WebApplicationBase):
                 notifications=_format_notification_settings(installation['settings']),
             )
         except Exception as err:
-            raise HTTPException(status_code=500, detail="Something went wrong on our side: " + str(err))
+            raise HTTPException(
+                status_code=500,
+                detail="Something went wrong on our side: " + str(err),
+            )
 
     @router.post(
         '/test-message',
@@ -110,10 +118,10 @@ class TelegramNotifyWebApplication(WebApplicationBase):
         responses={
             400: {
                 "model": ErrorResponse,
-                "description": "Something wrong with the settings, check the response for some hints"
-            }
+                "description": "Something wrong with the payload, more info in the response",
+            },
         },
-        description="This method sends a test message to the telegram chat with given credentials"
+        description="This method sends a test message to the telegram chat with given credentials",
     )
     async def test_message(
             self,

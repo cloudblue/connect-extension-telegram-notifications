@@ -30,7 +30,7 @@ class TelegramNotifyApplication(EventsApplicationBase):
             getattr(
                 event_messages,
                 f"{event_type.name.upper()}_{request[event_type.status_filed]}",
-                None
+                None,
             )
             or getattr(event_messages, f"{event_type.name.upper()}", None)
             or event_messages.DEFAULT_MESSAGE
@@ -58,7 +58,7 @@ class TelegramNotifyApplication(EventsApplicationBase):
             self.logger.error(Errors.TOKEN_NOT_SET)
             return BackgroundResponse.fail(Errors.TOKEN_NOT_SET)
         if self._get_settings_attr(
-                f"notifications.{event_type.name}.statuses.{request[event_type.status_filed]}"
+                f"notifications.{event_type.name}.statuses.{request[event_type.status_filed]}",
         ):
             try:
                 TelegramClient(

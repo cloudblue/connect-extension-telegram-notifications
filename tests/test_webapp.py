@@ -380,7 +380,7 @@ def test_test_message_invalid_chat_id(test_client_factory, mocker):
 def test_test_message_ok(test_client_factory, mocker):
     installation = {
         'id': 'EIN-000',
-        'settings': {'token': '5584437396:AAFnY_NQZreuvE3eDOAu_BQzrSTfMLyMXmU', 'chatId': -5},
+        'settings': {'token': '5585537482:AAFnY_PQZreuvE3eDOAu_AQzrSTfMLyMXmU', 'chatId': -5},
     }
     client = test_client_factory(TelegramNotifyWebApplication)
     payload = TestMessagePayload(

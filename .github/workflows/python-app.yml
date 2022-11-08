@@ -1,4 +1,4 @@
-name: Build Telegram notifications
+name: Test CloudBlue Connect Telegram Extension
 
 on:
   push:
@@ -9,28 +9,43 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  backend:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.9]
+        python-version: ['3.8', '3.9', '3.10']
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install poetry
-        poetry config virtualenvs.create false --local
-        poetry install --no-root
-    - name: Linting
-      run: |
-        flake8 .
-    - name: Testing
-      run: |
-        pytest
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry config virtualenvs.create false --local
+          poetry install --no-root
+      - name: Linting
+        run: |
+          flake8 .
+      - name: Testing
+        run: |
+          pytest
+  frontend:
+    runs-on: ubuntu-latest
+    name: Node 18 LTS
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm install
+      - name: Linting
+        run: npm run lint
+      - name: Testing
+        run: npm run test

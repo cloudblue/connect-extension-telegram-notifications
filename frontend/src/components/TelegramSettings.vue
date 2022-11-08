@@ -8,8 +8,9 @@
           <br/>
           <MDBInput v-model="chatId" label="Chat ID" @change="setUnsaved()"/>
         </MDBCardText>
-        <MDBBtn color="primary" :disabled="saving" @click.prevent="saveSettings">Save</MDBBtn>
-        <MDBBtn :disabled="saved === false && saving === false" color="primary" @click.prevent="testSettings">Test</MDBBtn>
+        <MDBBtn :disabled="saving" color="primary" @click.prevent="saveSettings">Save</MDBBtn>
+        <MDBBtn :disabled="saved === false && saving === false" color="primary" @click.prevent="testSettings">Test
+        </MDBBtn>
       </MDBCardBody>
     </MDBCard>
     <br/>
@@ -23,12 +24,12 @@
                               :collapseId="eventName"
                               :headerTitle="getTitle(event)">
               <ul class="switch-group">
-                <li class="switch-group-item" v-for="(statusValue, statusName) in event.statuses" :key="statusName">
+                <li v-for="(statusValue, statusName) in event.statuses" :key="statusName" class="switch-group-item">
                   <SettingsItem
                     :value="statusValue"
                     :name="statusName"
                     :loading="getSpinner(eventName, statusName)"
-                    @change="(value) => this.handleChange(eventName, statusName, value)"
+                    @statusChange="(value) => this.handleChange(eventName, statusName, value)"
                   />
                 </li>
               </ul>
@@ -115,27 +116,28 @@ export default {
   },
   async created() {
     try {
-      const response =  await fetch('/api/settings');
-      const {token, chatId, notifications}  = await response.json();
+      const response = await fetch('/api/settings');
+      const {token, chatId, notifications} = await response.json();
       this.token = token;
       this.chatId = chatId;
       this.notifications = notifications;
-    } catch(error) {
-        this.showError('Request failed: ' + error);
+    } catch (error) {
+      // TODO: It doesn't catch 500
+      this.showError('Request failed: ' + error);
     }
   },
   methods: {
-    showError(body='Some error'){
+    showError(body = 'Some error') {
       this.modalTitle = 'Error!';
       this.modalBody = body;
       this.modal = true;
     },
-    showAlert(body=''){
+    showAlert(body = '') {
       this.modalTitle = 'OK!';
       this.modalBody = body;
       this.modal = true;
     },
-    getSpinner(eventName, statusName){
+    getSpinner(eventName, statusName) {
       return !!(this.spinners[eventName] && this.spinners[eventName][statusName]);
     },
     setSpinner(eventName, statusName, value) {
@@ -161,18 +163,32 @@ export default {
         })
       };
       try {
-        const response = await fetch('/api/test-message', requestOptions);
-        const data = await response.json();
-        if (data.status === "FAIL") {
-          throw new Error(data.error);
-        } else {
-          this.showAlert('request successfully sent!');
-        }
-      } catch(error)  {
-          this.showError('Request failed: ' + error);
+        await fetch('/api/test-message', requestOptions)
+            .then((response) => {
+              switch (response.status) {
+                case 204:
+                case 200:
+                  this.showAlert('request successfully sent!');
+                  return;
+                case 400:
+                case 401:
+                case 500:
+                default:
+                  response.json()
+                      .then((json) => {
+                        this.showError('Request failed: ' + json.detail);
+                      })
+            }})
+      } catch (error) {
+        this.showError('Request failed: ' + error);
       }
     },
     async handleChange(eventName, statusName, value) {
+      console.log(eventName)
+      console.log(statusName)
+      console.log(value)
+
+
       this.notifications[eventName].statuses[statusName] = value;
       this.setSpinner(eventName, statusName, true);
       await this.makeRequest(true);
@@ -194,8 +210,7 @@ export default {
           this.showAlert('Settings saved!');
         }
         this.saved = true
-      }
-      catch(error){
+      } catch (error) {
         this.showError('Request failed: ' + error);
       }
     },

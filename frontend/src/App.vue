@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import createApp from 'connect-ui-toolkit'
+import createApp from '@cloudblueconnect/connect-ui-toolkit'
 import TelegramSettings from './components/TelegramSettings.vue'
 
 export default {

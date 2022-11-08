@@ -1,9 +1,7 @@
-# Welcome to Telegram notify !
+# Welcome to Telegram Notifications!  
 
-
-A very simple Telegram notificator
-
-
+Telegram notifications provide a mechanism to get fast notifications on desired events that happens at 
+CloudBlue Connect platform in the scope of a given account, such as fulfillment requests, listings and a long etc...
 
 ## License
 

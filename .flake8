@@ -5,4 +5,4 @@ max-line-length = 100
 application-import-names = connect_telegram_ext
 import-order-style = smarkets
 max-cognitive-complexity = 15
-ignore = FI1,I100,W503
+ignore = FI1,I100,W503,B008

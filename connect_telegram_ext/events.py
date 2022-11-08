@@ -4,86 +4,74 @@
 # All rights reserved.
 #
 import telegram.error
-from requests.exceptions import HTTPError
-from connect.client.exceptions import ClientError
-from connect.eaas.core.decorators import (
-    event, variables,
-)
+from connect.eaas.core.decorators import (event)
 from connect.eaas.core.extension import EventsApplicationBase
 from connect.eaas.core.responses import (
     BackgroundResponse,
 )
 
+import connect_telegram_ext.messages as event_messages
 from connect_telegram_ext.constants import Errors, Event, Events
 from connect_telegram_ext.telegram import TelegramClient
-import connect_telegram_ext.messages as event_messages
 
 
-@variables([{
-    "name": "PORTAL_URL",
-    "initial_value": "https://change.me/",
-}])
 class TelegramNotifyApplication(EventsApplicationBase):
     def _get_object_link(self, request, event_type):
-        try:
-            domain = self.installation_client.branding.action('portal').get()['domain']
-            domain = f"https://{domain}/"
-        except HTTPError:
-            domain = self.config['PORTAL_URL']
-        except ClientError:
-            domain = self.config['PORTAL_URL']
+        brand_id = self.installation_client.accounts.all().first()['brand']
+        if not brand_id:
+            brand_id = 'BR-000'
+        brand = self.installation_client.branding('brand').get(params={'id': brand_id})
+        domain = brand['portals'][list(brand['portals'])[0]]['domain']
+        domain = f"https://{domain}/"
         return f"{domain}{event_type.path}/{request['id']}"
 
     def _get_message(self, request, event_type: Event):
-        message_template = None
-        try:
-            message_template = getattr(
+        message_template = (
+            getattr(
                 event_messages,
                 f"{event_type.name.upper()}_{request[event_type.status_filed]}",
+                None,
             )
-        except AttributeError:
-            pass
-
-        if not message_template:
-            try:
-                message_template = getattr(event_messages, f"{event_type.name.upper()}")
-            except AttributeError:
-                pass
-
-        if not message_template:
-            message_template = event_messages.DEFAULT_MESSAGE
+            or getattr(event_messages, f"{event_type.name.upper()}", None)
+            or event_messages.DEFAULT_MESSAGE
+        )
 
         return message_template.format(
             object_link=self._get_object_link(request, event_type),
             object_status=request[event_type.status_filed],
             **request,
-        ).replace('-', '\-').replace('.', '\.').replace('!', '\!')  # noqa: W605
+        )
+
+    def _get_settings_attr(self, path: str):
+        tokens = path.split('.')
+        value = self.installation['settings']
+        for token in tokens:
+            value = value.get(token)
+            if not value or not isinstance(value, dict):
+                break
+        return value
 
     def _handle_event(self, request, event_type: Event):
         self.logger.info(f"Obtained {event_type.title} request with id {request['id']}")
-        if 'token' not in self.installation['settings']:
+        telegram_token = self._get_settings_attr('token')
+        if not telegram_token:
             self.logger.error(Errors.TOKEN_NOT_SET)
             return BackgroundResponse.fail(Errors.TOKEN_NOT_SET)
-        try:
-            if self.installation['settings'][
-                'notifications'
-            ][event_type.name]['statuses'][request[event_type.status_filed]]:
+        if self._get_settings_attr(
+                f"notifications.{event_type.name}.statuses.{request[event_type.status_filed]}",
+        ):
+            try:
                 TelegramClient(
-                    self.installation['settings']['token'],
-                    self.installation['settings']['chatId'],
+                    telegram_token,
+                    self._get_settings_attr('chatId'),
                 ).send_message(
                     self._get_message(request, event_type),
                 )
-            else:
-                self.logger.info(f"request with id {request['id']} skipped because of settings")
-        except telegram.error.TelegramError as err:
-            self.logger.error(str(err))
-            return BackgroundResponse.fail(str(err))
-        except KeyError as err:
-            self.logger.error(str(err))
-            self.logger.error('Event was skipped due to user settings')
-            return BackgroundResponse.done()
-
+            except telegram.error.TelegramError as err:
+                self.logger.error(str(err))
+                return BackgroundResponse.reschedule()
+        else:
+            self.logger.info(f"request with id {request['id']} skipped because of settings")
         return BackgroundResponse.done()
 
     @event(

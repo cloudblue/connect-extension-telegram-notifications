@@ -16,20 +16,14 @@ from connect.eaas.core.decorators import (
 from connect.eaas.core.extension import WebApplicationBase
 from connect.eaas.core.inject.synchronous import get_installation, get_installation_client
 from fastapi import Depends
-from pydantic import BaseModel
+from fastapi import HTTPException
+from starlette.status import HTTP_204_NO_CONTENT
 
-from connect_telegram_ext.constants import EVENT_LIST
+from connect_telegram_ext.constants import Errors, EVENT_LIST
+from connect_telegram_ext.models import (
+    ErrorResponse, SettingsPayload, TestMessagePayload,
+)
 from connect_telegram_ext.telegram import TelegramClient
-
-
-class SettingsPayload(BaseModel):
-    token: str
-    chatId: int
-    notifications: dict
-
-
-class TestMessagePayload(BaseModel):
-    message: str
 
 
 def _format_notification_settings(settings_dict):
@@ -39,8 +33,12 @@ def _format_notification_settings(settings_dict):
         return_array[event.name]['title'] = event.title
         return_array[event.name]['statuses'] = {}
         for status in event.statuses:
-            if ('notifications' in settings_dict) and (
-                    event.name in settings_dict['notifications']
+            if (
+                'notifications' in settings_dict
+            ) and (
+                event.name in settings_dict['notifications']
+            ) and (
+                status in settings_dict['notifications'][event.name]['statuses']
             ):
                 return_array[event.name]['statuses'][status] = settings_dict[
                     'notifications'
@@ -51,63 +49,102 @@ def _format_notification_settings(settings_dict):
 
 
 @web_app(router)
-@account_settings_page('My Settings', '/static/settings.html')
+@account_settings_page('Settings', '/static/settings.html')
 class TelegramNotifyWebApplication(WebApplicationBase):
-    @router.get('/settings')
+    @router.get(
+        '/settings',
+        summary="Telegram extension account settings",
+        response_model=SettingsPayload,
+        responses={
+            500: {
+                "model": ErrorResponse,
+                "description": (
+                    "Something wrong happened while processing the request. Please try again later"
+                ),
+            },
+        },
+        description="This function provides configuration interface for Telegram extension",
+    )
     def retrieve_settings(
             self,
-            installation: dict = Depends(get_installation),  # noqa: B008
+            installation: dict = Depends(get_installation),
     ):
-        settings = SettingsPayload(
-            token=installation['settings'].get('token', ''),
-            chatId=installation['settings'].get('chatId', 0),
-            notifications=_format_notification_settings(installation['settings']),
-        )
-        return settings.dict()
+        try:
+            settings = SettingsPayload(
+                token=installation['settings'].get('token'),
+                chatId=installation['settings'].get('chatId'),
+                notifications=_format_notification_settings(installation['settings']),
+            )
+        except Exception as err:
+            raise HTTPException(
+                status_code=500,
+                detail="Something went wrong on our side: " + str(err),
+            )
+        return settings
 
-    @router.post('/settings')
-    async def update_settings(
+    @router.post(
+        '/settings',
+        summary="Saves the list of settings",
+        response_model=SettingsPayload,
+        responses={
+            500: {
+                "model": ErrorResponse,
+                "description": (
+                    "Something wrong happened while processing the request. Please try again later"
+                ),
+            },
+        },
+        description="This method saves given settings.",
+    )
+    def update_settings(
             self,
             payload: SettingsPayload,
-            installation: dict = Depends(get_installation),  # noqa: B008
-            installation_client: ConnectClient = Depends(get_installation_client),  # noqa: B008
+            installation: dict = Depends(get_installation),
+            installation_client: ConnectClient = Depends(get_installation_client),
     ):
-        installation = installation_client('devops').installations[installation['id']].update(
-            {'settings': payload.dict()},
-        )
-        return installation_client('devops').installations[installation['id']].get()
+        try:
+            installation = installation_client('devops').installations[installation['id']].update(
+                {'settings': payload.dict()},
+            )
+            return SettingsPayload(
+                token=installation['settings'].get('token'),
+                chatId=installation['settings'].get('chatId'),
+                notifications=_format_notification_settings(installation['settings']),
+            )
+        except Exception as err:
+            raise HTTPException(
+                status_code=500,
+                detail="An error has occurred: " + str(err),
+            )
 
-    @router.post('/test-message')
-    async def test_message(
+    @router.post(
+        '/test-message',
+        summary="An endpoint to send a test message",
+        status_code=HTTP_204_NO_CONTENT,
+        responses={
+            400: {
+                "model": ErrorResponse,
+                "description": "Your request can't be processed due input errors.",
+            },
+        },
+        description="This method sends a test message to the telegram chat with given credentials",
+    )
+    def test_message(
             self,
             payload: TestMessagePayload,
-            installation: dict = Depends(get_installation),  # noqa: B008
+            installation: dict = Depends(get_installation),
     ):
-        if 'token' in installation['settings']:
-            try:
-                TelegramClient(
-                    installation['settings']['token'],
-                    installation['settings']['chatId'],
-                ).send_message(
-                    payload.message,
-                )
-                return {
-                    'status': 'OK',
-                    'error': '',
-                }
-            except telegram.error.TelegramError as err:
-                return {
-                    'status': 'FAIL',
-                    'error': str(err),
-                }
-        return {
-            'status': 'FAIL',
-            'error': 'Token not found',
-        }
-
-    @router.get('/whoami')
-    def whoami(
-            self,
-            installation_client: ConnectClient = Depends(get_installation_client),  # noqa: B008
-    ):
-        return installation_client.auth.action('context').get()
+        if 'token' not in installation['settings'] or installation['settings']['token'] is None:
+            raise HTTPException(status_code=400, detail=Errors.TOKEN_NOT_SET)
+        if 'chatId' not in installation['settings'] or installation['settings']['chatId'] is None:
+            raise HTTPException(status_code=400, detail=Errors.CHAT_ID_NOT_SET)
+        try:
+            TelegramClient(
+                installation['settings']['token'],
+                installation['settings']['chatId'],
+            ).send_message(
+                payload.message,
+            )
+        except telegram.error.TelegramError as err:
+            raise HTTPException(status_code=400, detail=str(err))
+        return

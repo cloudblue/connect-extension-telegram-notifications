@@ -29,7 +29,7 @@ export default defineComponent({
   watch: {
     status: {
       handler() {
-        this.$emit('change', this.status);
+        this.$emit('statusChange', this.status);
       }
     }
   },

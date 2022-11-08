@@ -1,8 +1,9 @@
 {
-  "name": "Telegram notify",
-  "description": "A very simple Telegram notificator",
-  "version": "0.5.3",
+  "name": "Telegram Notifications",
+  "description": "Telegram notifications provide a mechanism to get fast notifications on desired events that happens at CloudBlue Connect platform in the scope of a given account, such as fulfillment requests, listings and a long etc...",
+  "version": "0.7.5",
   "readme_url": "https://example.com/README.md",
   "changelog_url": "https://example.com/CHANGELOG.md",
-  "icon": "googleExtensionBaseline"
+  "icon": "extension",
+  "audience": ["vendor", "distributor", "reseller"]
 }

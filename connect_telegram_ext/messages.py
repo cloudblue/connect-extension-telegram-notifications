@@ -19,14 +19,17 @@
 # Copyright (c) 2022, Cloudblue Connect
 # All rights reserved.
 #
-DEFAULT_MESSAGE = 'Obtained request №[{id}]({object_link}) in status {object_status}'
+DEFAULT_MESSAGE = (
+    'Attention: Request №<a href={object_link}>{id}</a> has been updated and is in '
+    'status {object_status}. Please check if requires your attention.'
+)
 
 ASSET_ADJUSTMENT_REQUEST_PROCESSING = None
 ASSET_CANCEL_REQUEST_PROCESSING = None
 ASSET_CHANGE_REQUEST_PROCESSING = None
 ASSET_PURCHASE_REQUEST_PROCESSING = (
-    'Purchase request №[{id}]({object_link}) got update. '
-    'The current status is {object_status}.'
+    'Purchase request №<a href={object_link}>{id}</a> has been updated and is in '
+    'status {object_status}. Please check if requires your attention.'
 )
 ASSET_RESUME_REQUEST_PROCESSING = None
 ASSET_SUSPEND_REQUEST_PROCESSING = None
@@ -44,10 +47,9 @@ USAGE_FILE_CREATION_PROCESSING = None
 USAGE_FILE_UPLOAD_PROCESSING = None
 
 HELPDESK_CASE_PROCESSING = (
-    '*WARNING!* \nHelpdesk case №[{id}]({object_link}) '
+    '<b>WARNING!</b> \nHelpdesk case №<a href={object_link}>{id}</a> '
     'changed status to {object_status}.'
 )
 HELPDESK_CASE_PROCESSING_resolved = (
-    '*Congratulations!* \nHelpdesk case '
-    '№[{id}]({object_link}) resolved!'
+    'Helpdesk case <a href={object_link}>{id}</a> has been resolved.'
 )

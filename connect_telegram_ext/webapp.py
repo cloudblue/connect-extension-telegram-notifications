@@ -53,16 +53,17 @@ def _format_notification_settings(settings_dict):
 class TelegramNotifyWebApplication(WebApplicationBase):
     @router.get(
         '/settings',
-        summary="Returns list of settings",
+        summary="Telegram extension account settings",
         response_model=SettingsPayload,
         responses={
             500: {
                 "model": ErrorResponse,
-                "description": "Something wrong happened on our side. There are some "
-                               "hints in the response but usually they shouldn't help much",
+                "description": (
+                    "Something wrong happened while processing the request. Please try again later"
+                ),
             },
         },
-        description="This function returns connectivity and notification settings",
+        description="This function provides configuration interface for Telegram extension",
     )
     def retrieve_settings(
             self,
@@ -88,8 +89,9 @@ class TelegramNotifyWebApplication(WebApplicationBase):
         responses={
             500: {
                 "model": ErrorResponse,
-                "description": "Something wrong happened on our side. There are some hints "
-                               "in the response but usually they shouldn't help much ",
+                "description": (
+                    "Something wrong happened while processing the request. Please try again later"
+                ),
             },
         },
         description="This method saves given settings.",
@@ -112,7 +114,7 @@ class TelegramNotifyWebApplication(WebApplicationBase):
         except Exception as err:
             raise HTTPException(
                 status_code=500,
-                detail="Something went wrong on our side: " + str(err),
+                detail="An error has occurred: " + str(err),
             )
 
     @router.post(
@@ -122,7 +124,7 @@ class TelegramNotifyWebApplication(WebApplicationBase):
         responses={
             400: {
                 "model": ErrorResponse,
-                "description": "Something wrong with the payload, more info in the response",
+                "description": "Your request can't be processed due input errors.",
             },
         },
         description="This method sends a test message to the telegram chat with given credentials",

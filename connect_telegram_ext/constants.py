@@ -104,6 +104,7 @@ class Events:
 
 class Errors:
     TOKEN_NOT_SET = 'Telegram token not set'
+    CHAT_ID_NOT_SET = 'Telegram chat ID not set'
 
 
 EVENT_LIST = [

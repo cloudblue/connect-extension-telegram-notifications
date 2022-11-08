@@ -53,6 +53,7 @@ branch = true
 
 [tool.coverage.report]
 omit = [
+    "connect_telegram_ext/messages.py"
 ]
 
 exclude_lines = [

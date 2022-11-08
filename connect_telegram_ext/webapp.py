@@ -33,8 +33,12 @@ def _format_notification_settings(settings_dict):
         return_array[event.name]['title'] = event.title
         return_array[event.name]['statuses'] = {}
         for status in event.statuses:
-            if ('notifications' in settings_dict) and (
-                    event.name in settings_dict['notifications']
+            if (
+                'notifications' in settings_dict
+            ) and (
+                event.name in settings_dict['notifications']
+            ) and (
+                status in settings_dict['notifications'][event.name]['statuses']
             ):
                 return_array[event.name]['statuses'][status] = settings_dict[
                     'notifications'
@@ -90,14 +94,14 @@ class TelegramNotifyWebApplication(WebApplicationBase):
         },
         description="This method saves given settings.",
     )
-    async def update_settings(
+    def update_settings(
             self,
             payload: SettingsPayload,
             installation: dict = Depends(get_installation),
             installation_client: ConnectClient = Depends(get_installation_client),
     ):
         try:
-            installation_client('devops').installations[installation['id']].update(
+            installation = installation_client('devops').installations[installation['id']].update(
                 {'settings': payload.dict()},
             )
             return SettingsPayload(
@@ -123,13 +127,15 @@ class TelegramNotifyWebApplication(WebApplicationBase):
         },
         description="This method sends a test message to the telegram chat with given credentials",
     )
-    async def test_message(
+    def test_message(
             self,
             payload: TestMessagePayload,
             installation: dict = Depends(get_installation),
     ):
         if 'token' not in installation['settings'] or installation['settings']['token'] is None:
             raise HTTPException(status_code=400, detail=Errors.TOKEN_NOT_SET)
+        if 'chatId' not in installation['settings'] or installation['settings']['chatId'] is None:
+            raise HTTPException(status_code=400, detail=Errors.CHAT_ID_NOT_SET)
         try:
             TelegramClient(
                 installation['settings']['token'],

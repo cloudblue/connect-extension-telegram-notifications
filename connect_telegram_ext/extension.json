@@ -2,8 +2,8 @@
   "name": "Telegram Notifications",
   "description": "Telegram notifications provide a mechanism to get fast notifications on desired events that happens at CloudBlue Connect platform in the scope of a given account, such as fulfillment requests, listings and a long etc...",
   "version": "0.7.5",
-  "readme_url": "https://cloudblue.github.io/connect-extension-telegram-notifications/",
-  "changelog_url": "https://cloudblue.github.io/connect-extension-telegram-notifications/CHANGELOG.html",
+  "readme_url": "https://cloudblue.github.io/connect-extension-telegram-notifications/README.md",
+  "changelog_url": "https://cloudblue.github.io/connect-extension-telegram-notifications/CHANGELOG.md",
   "icon": "extension",
   "audience": ["vendor", "distributor", "reseller"]
 }

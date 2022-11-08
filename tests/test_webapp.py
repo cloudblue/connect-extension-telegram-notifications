@@ -310,7 +310,7 @@ def test_update_settings_failed(test_client_factory, mocker):
     result = client.post('/api/settings', json=payload.dict(), installation=installation)
 
     assert result.status_code == 500
-    assert result.json()['detail'] == 'Something went wrong on our side: Unexpected error'
+    assert result.json()['detail'] == 'An error has occurred: Unexpected error'
 
 
 def test_test_message_no_token(test_client_factory):

@@ -47,9 +47,14 @@ USAGE_FILE_CREATION_PROCESSING = None
 USAGE_FILE_UPLOAD_PROCESSING = None
 
 HELPDESK_CASE_PROCESSING = (
-    '<b>WARNING!</b> \nHelpdesk case №<a href="{object_link}">{id}</a> '
+    'Helpdesk case <a href="{object_link}">{id}</a> from <b>{issuer[account][name]}</b> '
     'changed status to {object_status}.'
 )
 HELPDESK_CASE_PROCESSING_resolved = (
-    'Helpdesk case <a href="{object_link}">{id}</a> has been resolved.'
+    'Helpdesk case <a href="{object_link}">{id}</a> from {issuer[account][name]} has been resolved.'
+)
+HELPDESK_CASE_PROCESSING_pending = (
+    'Helpdesk case <a href="{object_link}">{id}</a> from <b>{issuer[account][name]}</b> changed '
+    'status to pending. \n'
+    'Ticket description is: \n {description}'
 )

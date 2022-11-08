@@ -44,8 +44,8 @@ jobs:
         with:
           node-version: 18
       - name: Install dependencies
-        run: npm install
+        run: npm install --prefix frontend
       - name: Linting
-        run: npm run lint
+        run: npm run lint --prefix frontend
       - name: Testing
-        run: npm run test
+        run: npm run test:unit --prefix frontend

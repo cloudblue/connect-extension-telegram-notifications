@@ -1,10 +1,9 @@
+remote_theme: pages-themes/cayman@v0.2.0
 plugins:
   - jekyll-relative-links
+  - jekyll-remote-theme
 relative_links:
   enabled: true
   collections: true
-include:
-  - README.md
-  - LICENSE
-  - HOWTO.md
-  - CHANGELOG.md
+title: "Telegram Notifications"
+description: "Telegram notifications provide a mechanism to get fast notifications on desired events that happens at CloudBlue Connect platform in the scope of a given account, such as fulfillment requests, listings and a long etc..."

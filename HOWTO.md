@@ -1,5 +1,11 @@
 # Welcome to Connect Extension project Telegram notify
 
+## Navigation
+*   [home](./README.md).
+*   [HOWTO](./HOWTO.md).
+*   [CHANGELOG](./CHANGELOG.md).
+*   [LICENSE](./LICENSE).
+
 ## Next steps
 
 You may open your favorite IDE and start working with your project, please note that this project runs using docker.

@@ -129,7 +129,7 @@ def default_message_callback(event: Event, client: ConnectClient, request: dict)
             Messages,
             f"{event.name.upper()}",
             Messages.DEFAULT_MESSAGE,
-        )
+        ),
     )
 
     return message_template.format(

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, Optional, Any
+from typing import Any, Callable, Optional
 
 from connect.client.fluent import ConnectClient
 from pydantic import BaseModel

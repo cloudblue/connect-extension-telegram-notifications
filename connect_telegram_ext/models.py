@@ -1,6 +1,19 @@
+from dataclasses import dataclass
+from typing import Any, Callable, Optional
+
+from connect.client.fluent import ConnectClient
 from pydantic import BaseModel
 
-from typing import Optional
+
+@dataclass
+class Event:
+    name: str
+    statuses: list
+    title: str
+    path: str
+    message_callback: Callable[[Any, ConnectClient, dict], str]
+    enabled: bool = False
+    status_filed: str = 'status'
 
 
 class SettingsPayload(BaseModel):

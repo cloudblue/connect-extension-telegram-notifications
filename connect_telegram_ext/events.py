@@ -10,38 +10,12 @@ from connect.eaas.core.responses import (
     BackgroundResponse,
 )
 
-import connect_telegram_ext.messages as event_messages
-from connect_telegram_ext.constants import Errors, Event, Events
+from connect_telegram_ext.constants import Errors, Events
+from connect_telegram_ext.models import Event
 from connect_telegram_ext.telegram import TelegramClient
 
 
 class TelegramNotifyApplication(EventsApplicationBase):
-    def _get_object_link(self, request, event_type):
-        brand_id = self.installation_client.accounts.all().first()['brand']
-        if not brand_id:
-            brand_id = 'BR-000'
-        brand = self.installation_client.branding('brand').get(params={'id': brand_id})
-        domain = brand['portals'][list(brand['portals'])[0]]['domain']
-        domain = f"https://{domain}/"
-        return f"{domain}{event_type.path}/{request['id']}"
-
-    def _get_message(self, request, event_type: Event):
-        message_template = (
-            getattr(
-                event_messages,
-                f"{event_type.name.upper()}_{request[event_type.status_filed]}",
-                None,
-            )
-            or getattr(event_messages, f"{event_type.name.upper()}", None)
-            or event_messages.DEFAULT_MESSAGE
-        )
-
-        return message_template.format(
-            object_link=self._get_object_link(request, event_type),
-            object_status=request[event_type.status_filed],
-            **request,
-        )
-
     def _get_settings_attr(self, path: str):
         tokens = path.split('.')
         value = self.installation['settings']
@@ -65,7 +39,7 @@ class TelegramNotifyApplication(EventsApplicationBase):
                     telegram_token,
                     self._get_settings_attr('chatId'),
                 ).send_message(
-                    self._get_message(request, event_type),
+                    event_type.message_callback(event_type, self.client, request),
                 )
             except telegram.error.TelegramError as err:
                 self.logger.error(str(err))

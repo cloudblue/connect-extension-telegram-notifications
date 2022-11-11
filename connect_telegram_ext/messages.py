@@ -141,7 +141,7 @@ def helpdesk_message(event: Event, client: ConnectClient, request: dict) -> str:
     last_message_string = ""
     conversation = client.conversations.filter(f"eq(instance_id,{request['id']})").first()
     last_message = client.conversations[conversation['id']].messages.all().order_by(
-        '-created'
+        '-created',
     ).first()
     if last_message:
         last_message['created'] = datetime.fromisoformat(last_message['created']).strftime(

@@ -77,7 +77,7 @@ class Messages:
         'Priority: {priority}'
     )
     HELPDESK_CASE_PROCESSING_inquiring = (
-        'New case [<a href="{object_link}">{id}</a>] \n'
+        'Case [<a href="{object_link}">{id}</a>] has been inquired\n'
         '\n'
         '<b>From:</b> {issuer[account][name]} \n'
         '<b>To:</b> {receiver[account][name]} \n'
@@ -98,6 +98,8 @@ class Messages:
         '<b>To:</b> {receiver[account][name]} \n'
         '\n'
         '<b>Subject:</b> {subject} \n'
+        '\n'
+        '<b>Description:</b> {description} \n'
         '\n'
         '{last_message_string}'
         'Id: {id} \n'
@@ -123,12 +125,12 @@ def default_message_callback(event: Event, client: ConnectClient, request: dict)
     message_template = getattr(
         Messages,
         f"{event.name.upper()}_{request[event.status_filed]}",
-        None,
-    ) or getattr(
-        Messages,
-        f"{event.name.upper()}",
-        None,
-    ) or Messages.DEFAULT_MESSAGE
+        getattr(
+            Messages,
+            f"{event.name.upper()}",
+            Messages.DEFAULT_MESSAGE,
+        )
+    )
 
     return message_template.format(
         object_link=get_object_link(client, event.path, request['id']),

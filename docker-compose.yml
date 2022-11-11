@@ -3,16 +3,19 @@ version: '3'
 services:
   telegram_notify_dev:
     container_name: telegram_notify_dev
-    image: cloudblueconnect/connect-extension-runner:26.36
+    build:
+      context: .
+    working_dir: /extension
     command: cextrun -d
-    volumes: 
+    volumes:
       - .:/extension
     env_file:
       - .telegram_notify_dev.env
 
   telegram_notify_bash:
     container_name: telegram_notify_bash
-    image: cloudblueconnect/connect-extension-runner:26.36
+    build:
+      context: .
     working_dir: /extension
     command: /bin/bash
     stdin_open: true
@@ -24,7 +27,8 @@ services:
 
   telegram_notify_test:
     container_name: telegram_notify_test
-    image: cloudblueconnect/connect-extension-runner:26.36
+    build:
+      context: .
     working_dir: /extension
     command: /bin/bash -c "poetry install && poetry run flake8 && poetry run pytest"
     volumes:

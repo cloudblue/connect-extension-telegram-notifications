@@ -30,7 +30,7 @@ class TelegramNotifyApplication(EventsApplicationBase):
         telegram_token = self._get_settings_attr('token')
         if not telegram_token:
             self.logger.error(Errors.TOKEN_NOT_SET)
-            return BackgroundResponse.fail(Errors.TOKEN_NOT_SET)
+            return BackgroundResponse.done()
         if self._get_settings_attr(
                 f"notifications.{event_type.name}.statuses.{request[event_type.status_filed]}",
         ):

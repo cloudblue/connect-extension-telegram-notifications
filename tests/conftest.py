@@ -6,7 +6,7 @@ from connect.client import AsyncConnectClient, ConnectClient
 def connect_client():
     return ConnectClient(
         'ApiKey fake_api_key',
-        endpoint='https://localhost/public/v1',
+        endpoint='https://example.org/public/v1',
     )
 
 
@@ -14,7 +14,7 @@ def connect_client():
 def async_connect_client():
     return AsyncConnectClient(
         'ApiKey fake_api_key',
-        endpoint='https://localhost/public/v1',
+        endpoint='https://example.org/public/v1',
     )
 
 

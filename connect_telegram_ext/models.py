@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import Callable, Optional, Any
 
 from connect.client.fluent import ConnectClient
 from pydantic import BaseModel
@@ -11,8 +11,7 @@ class Event:
     statuses: list
     title: str
     path: str
-    # TODO: replace any with proper type
-    message_callback: Callable[[any, ConnectClient, dict], str]
+    message_callback: Callable[[Any, ConnectClient, dict], str]
     enabled: bool = False
     status_filed: str = 'status'
 

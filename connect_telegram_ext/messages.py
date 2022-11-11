@@ -19,6 +19,8 @@
 # Copyright (c) 2022, Cloudblue Connect
 # All rights reserved.
 #
+from datetime import datetime
+
 from connect.client.fluent import ConnectClient
 
 from connect_telegram_ext.models import Event
@@ -84,6 +86,7 @@ class Messages:
         '\n'
         '<b>Description:</b> {description} \n'
         '\n'
+        '{last_message_string}'
         'Id: {id} \n'
         'Type: {type} \n'
         'Priority: {priority}'
@@ -96,9 +99,7 @@ class Messages:
         '\n'
         '<b>Subject:</b> {subject} \n'
         '\n'
-        '<b>Last comment</b> from {last_message[creator][name]} at {last_message[created]}: \n'
-        '{last_message[text]}'
-        '\n'
+        '{last_message_string}'
         'Id: {id} \n'
         'Type: {type} \n'
         'Priority: {priority}'
@@ -137,14 +138,18 @@ def default_message_callback(event: Event, client: ConnectClient, request: dict)
 
 
 def helpdesk_message(event: Event, client: ConnectClient, request: dict) -> str:
-    if request[event.status_filed] == 'pending':
-        conversation = client.conversations.filter(f"eq(instance_id,{request['id']})").first()
-        last_message = client.conversations[
-            conversation['id'],
-        ].messages.all().order_by('created').first()
-        if last_message is None:
-            request[event.status_filed] = 'inquiring'
-        else:
-            request['last_message'] = last_message
-
+    last_message_string = ""
+    conversation = client.conversations.filter(f"eq(instance_id,{request['id']})").first()
+    last_message = client.conversations[conversation['id']].messages.all().order_by(
+        '-created'
+    ).first()
+    if last_message:
+        last_message['created'] = datetime.fromisoformat(last_message['created']).strftime(
+            "%d-%m-%Y, %H:%m:%S",
+        )
+        last_message_string = (
+            '<b>Last comment</b> from {creator[name]} at {created}: \n'
+            '{text} \n\n'
+        ).format(**last_message)
+    request['last_message_string'] = last_message_string
     return default_message_callback(event, client, request)

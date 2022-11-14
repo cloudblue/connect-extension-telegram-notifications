@@ -11,7 +11,7 @@ def _get_default_settings():
     return deepcopy(OrderedDict([(
         'asset_adjustment_request_processing',
         {
-            'title': 'Asset adjustment request processing',
+            'title': 'Subscription adjustment request processing',
             'statuses': {
                 'pending': False, 'approved': False, 'failed': False,
                 'inquiring': False, 'scheduled': False, 'revoking': False,
@@ -21,7 +21,7 @@ def _get_default_settings():
     ), (
         'asset_cancel_request_processing',
         {
-            'title': 'Asset cancel request processing',
+            'title': 'Subscription cancel request processing',
             'statuses': {
                 'pending': False, 'approved': False, 'failed': False,
                 'inquiring': False, 'scheduled': False, 'revoking': False,
@@ -31,7 +31,7 @@ def _get_default_settings():
     ), (
         'asset_change_request_processing',
         {
-            'title': 'Asset change request processing',
+            'title': 'Subscription change request processing',
             'statuses': {
                 'pending': False, 'approved': False,
                 'failed': False, 'inquiring': False,
@@ -42,7 +42,7 @@ def _get_default_settings():
     ), (
         'asset_purchase_request_processing',
         {
-            'title': 'Asset purchase request processing',
+            'title': 'Subscription purchase request processing',
             'statuses': {
                 'pending': False, 'approved': False,
                 'failed': False, 'inquiring': False,
@@ -53,7 +53,7 @@ def _get_default_settings():
     ), (
         'asset_resume_request_processing',
         {
-            'title': 'Asset resume request processing',
+            'title': 'Subscription resume request processing',
             'statuses': {
                 'pending': False, 'approved': False,
                 'failed': False, 'inquiring': False,
@@ -64,7 +64,7 @@ def _get_default_settings():
     ), (
         'asset_suspend_request_processing',
         {
-            'title': 'Asset suspend request processing',
+            'title': 'Subscription suspend request processing',
             'statuses': {
                 'pending': False, 'approved': False,
                 'failed': False, 'inquiring': False,
@@ -92,7 +92,7 @@ def _get_default_settings():
     ), (
         'part_usage_file_request_processing',
         {
-            'title': 'Part usage file request processing',
+            'title': 'Chunk usage file request processing',
             'statuses': {
                 'draft': False, 'ready': False,
                 'closed': False, 'failed': False,
@@ -156,25 +156,25 @@ def _get_default_settings():
 def _get_test_settings():
     return deepcopy({
         "asset_adjustment_request_processing": {
-            "title": "Asset adjustment request processing",
+            "title": "Subscription adjustment request processing",
             "statuses": {
                 "pending": True,
             },
         },
         "asset_cancel_request_processing": {
-            "title": "Asset cancel request processing",
+            "title": "Subscription cancel request processing",
             "statuses": {
                 "failed": True,
             },
         },
         "asset_change_request_processing": {
-            "title": "Asset change request processing",
+            "title": "Subscription change request processing",
             "statuses": {
                 "revoking": False,
             },
         },
         "asset_purchase_request_processing": {
-            "title": "Asset purchase request processing",
+            "title": "Subscription purchase request processing",
             "statuses": {
                 "failed": True,
                 "inquiring": True,

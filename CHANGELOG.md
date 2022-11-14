@@ -7,7 +7,7 @@
 *   [LICENSE](./LICENSE).
 
 ## CHANGELOG
-*  0.8.0: Tests added, global refactoring.  
+*  0.7.15: Fixed error that appears on empty conversation  
 *  0.7.14: Making linter happy again  
 *  0.7.13: No failed messages on "Token not set" error anymore  
 *  0.7.12: Making linter happy  

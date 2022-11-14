@@ -21,6 +21,7 @@
 #
 from datetime import datetime
 
+from connect.client.exceptions import ClientError
 from connect.client.fluent import ConnectClient
 
 from connect_telegram_ext.models import Event
@@ -141,10 +142,16 @@ def default_message_callback(event: Event, client: ConnectClient, request: dict)
 
 def helpdesk_message(event: Event, client: ConnectClient, request: dict) -> str:
     last_message_string = ""
-    conversation = client.conversations.filter(f"eq(instance_id,{request['id']})").first()
-    last_message = client.conversations[conversation['id']].messages.all().order_by(
-        '-created',
-    ).first()
+    last_message = None
+    try:
+        conversation = client.conversations.filter(f"eq(instance_id,{request['id']})").first()
+        if conversation:
+            last_message = client.conversations[conversation['id']].messages.all().order_by(
+                '-created',
+            ).first()
+    except ClientError:
+        pass
+
     if last_message:
         last_message['created'] = datetime.fromisoformat(last_message['created']).strftime(
             "%d-%m-%Y, %H:%m:%S",

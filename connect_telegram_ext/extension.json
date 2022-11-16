@@ -4,6 +4,6 @@
   "version": "0.7.17",
   "readme_url": "https://cloudblue.github.io/connect-extension-telegram-notifications/README.md",
   "changelog_url": "https://cloudblue.github.io/connect-extension-telegram-notifications/CHANGELOG.md",
-  "icon": "extension",
+  "icon": "chat",
   "audience": ["vendor", "distributor", "reseller"]
 }

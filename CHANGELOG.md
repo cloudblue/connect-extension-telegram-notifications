@@ -7,6 +7,7 @@
 *   [LICENSE](./LICENSE).
 
 ## CHANGELOG
+*  0.7.19: Small bugfix. KeyError found.
 *  0.7.17: Change of titles  
 *  0.7.15: Fixed error that appears on empty conversation  
 *  0.7.14: Making linter happy again  

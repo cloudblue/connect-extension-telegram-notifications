@@ -1,4 +1,14 @@
+import re
+
 import telegram
+
+
+def convert_unsupported_tags(message_with_tags):
+    return re.sub(
+        r'<(?!(\/?(b|i|a href|code|pre)\b))[^>]+>',
+        lambda m: m.group().replace("<", "&lt;").replace(">", "&gt;"),
+        message_with_tags,
+    )
 
 
 class TelegramClient:
@@ -14,6 +24,6 @@ class TelegramClient:
         bot = telegram.Bot(self.token)
         return bot.send_message(
             self.chat_id,
-            message,
+            convert_unsupported_tags(message),
             parse_mode=telegram.constants.PARSEMODE_HTML,
         )

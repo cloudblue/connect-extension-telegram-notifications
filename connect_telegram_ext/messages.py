@@ -156,9 +156,15 @@ def helpdesk_message(event: Event, client: ConnectClient, request: dict) -> str:
         last_message['created'] = datetime.fromisoformat(last_message['created']).strftime(
             "%d-%m-%Y, %H:%m:%S",
         )
-        last_message_string = (
-            '<b>Last comment</b> from {creator[name]} at {created}: \n'
-            '{text} \n\n'
-        ).format(**last_message)
+        if 'creator' in last_message:
+            last_message_string = (
+                '<b>Last comment</b> from {creator[name]} at {created}: \n'
+                '{text} \n\n'
+            ).format(**last_message)
+        else:
+            last_message_string = (
+                '<b>Last comment</b> at {created}: \n'
+                '{text} \n\n'
+            ).format(**last_message)
     request['last_message_string'] = last_message_string
     return default_message_callback(event, client, request)

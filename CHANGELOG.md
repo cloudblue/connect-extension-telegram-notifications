@@ -7,6 +7,7 @@
 *   [LICENSE](./LICENSE).
 
 ## CHANGELOG
+*  0.7.21: A better version of sanitizer added
 *  0.7.20: Small bugfix. Added method that sanitizes unsupported tags.
 *  0.7.19: Small bugfix. KeyError found.
 *  0.7.17: Change of titles  

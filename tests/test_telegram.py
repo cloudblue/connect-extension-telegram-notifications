@@ -21,3 +21,7 @@ def test_convert_unsupported_tags():
     input_string = "there is an email <noreply-telefonicacloud@connect.cloudblue.com>"
     expected_output = "there is an email &lt;noreply-telefonicacloud@connect.cloudblue.com&gt;"
     assert convert_unsupported_tags(input_string) == expected_output
+
+    input_string = "there is a href without start </a>"
+    expected_output = "there is a href without start &lt;/a&gt;"
+    assert convert_unsupported_tags(input_string) == expected_output

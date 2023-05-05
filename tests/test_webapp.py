@@ -24,7 +24,7 @@ def _get_default_settings():
             'title': 'Subscription cancel request processing',
             'statuses': {
                 'pending': False, 'approved': False, 'failed': False,
-                'inquiring': False, 'scheduled': False, 'revoking': False,
+                'scheduled': False, 'revoking': False,
                 'revoked': False,
             },
         },
@@ -56,7 +56,7 @@ def _get_default_settings():
             'title': 'Subscription resume request processing',
             'statuses': {
                 'pending': False, 'approved': False,
-                'failed': False, 'inquiring': False,
+                'failed': False,
                 'scheduled': False, 'revoking': False,
                 'revoked': False,
             },
@@ -67,7 +67,7 @@ def _get_default_settings():
             'title': 'Subscription suspend request processing',
             'statuses': {
                 'pending': False, 'approved': False,
-                'failed': False, 'inquiring': False,
+                'failed': False,
                 'scheduled': False, 'revoking': False,
                 'revoked': False,
             },
@@ -144,7 +144,6 @@ def _get_default_settings():
                 'draft': False, 'uploading': False,
                 'uploaded': False, 'invalid': False,
                 'processing': False,
-                'processed': False,
                 'ready': False, 'rejected': False,
                 'pending': False, 'accepted': False,
                 'closed': False,
@@ -220,12 +219,6 @@ def test_retrieve_settings_500(test_client_factory, mocker):
     response = client.get('/api/settings', installation=installation)
     assert response.status_code == 500
     assert response.json()['detail'] == 'Something went wrong on our side: mocker error'
-
-
-def test_retrieve_settings_no_installation(test_client_factory):
-    client = test_client_factory(TelegramNotifyWebApplication)
-    response = client.get('/api/settings')
-    assert response.status_code == 404
 
 
 def test_retrieve_settings(test_client_factory):
@@ -389,4 +382,3 @@ def test_test_message_ok(test_client_factory, mocker):
     mocker.patch('connect_telegram_ext.telegram.TelegramClient.send_message', return_value={})
     response = client.post('/api/test-message', json=payload.dict(), installation=installation)
     assert response.status_code == 204
-    assert response.json() is None

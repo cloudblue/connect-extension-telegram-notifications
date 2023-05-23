@@ -29,7 +29,7 @@ class TelegramNotifyApplication(EventsApplicationBase):
         self.logger.info(f"Obtained {event_type.title} request with id {request['id']}")
         telegram_token = self._get_settings_attr('token')
         if not telegram_token:
-            self.logger.error(Errors.TOKEN_NOT_SET)
+            self.logger.info(Errors.TOKEN_NOT_SET)
             return BackgroundResponse.done()
         if self._get_settings_attr(
                 f"notifications.{event_type.name}.statuses.{request[event_type.status_filed]}",
@@ -42,7 +42,7 @@ class TelegramNotifyApplication(EventsApplicationBase):
                     event_type.message_callback(event_type, self.client, request),
                 )
             except telegram.error.TelegramError as err:
-                self.logger.error(str(err))
+                self.logger.info(str(err))
                 return BackgroundResponse.reschedule()
         else:
             self.logger.info(f"request with id {request['id']} skipped because of settings")

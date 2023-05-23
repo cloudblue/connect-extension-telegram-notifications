@@ -27,7 +27,7 @@ class Events:
     )
     ASSET_CANCEL_REQUEST_PROCESSING = Event(
         'asset_cancel_request_processing',
-        ['pending', 'approved', 'failed', 'inquiring', 'scheduled', 'revoking', 'revoked'],
+        ['pending', 'approved', 'failed', 'scheduled', 'revoking', 'revoked'],
         event_titles.ASSET_CANCEL_REQUEST_PROCESSING,
         'requests',
         event_messages.default_message_callback,
@@ -41,7 +41,7 @@ class Events:
     )
     ASSET_RESUME_REQUEST_PROCESSING = Event(
         'asset_resume_request_processing',
-        ['pending', 'approved', 'failed', 'inquiring', 'scheduled', 'revoking', 'revoked'],
+        ['pending', 'approved', 'failed', 'scheduled', 'revoking', 'revoked'],
         event_titles.ASSET_RESUME_REQUEST_PROCESSING,
         'requests',
         event_messages.default_message_callback,
@@ -55,7 +55,7 @@ class Events:
     )
     ASSET_SUSPEND_REQUEST_PROCESSING = Event(
         'asset_suspend_request_processing',
-        ['pending', 'approved', 'failed', 'inquiring', 'scheduled', 'revoking', 'revoked'],
+        ['pending', 'approved', 'failed', 'scheduled', 'revoking', 'revoked'],
         event_titles.ASSET_SUSPEND_REQUEST_PROCESSING,
         'requests',
         event_messages.default_message_callback,
@@ -91,7 +91,7 @@ class Events:
     USAGE_FILE_REQUEST_PROCESSING = Event(
         'usage_file_request_processing',
         ["draft", "uploading", "uploaded", "invalid", "processing",
-         "processed", "ready", "rejected", "pending", "accepted", "closed"],
+         "ready", "rejected", "pending", "accepted", "closed"],
         event_titles.USAGE_FILE_REQUEST_PROCESSING,
         'usage/files',
         event_messages.default_message_callback,
